@@ -463,6 +463,27 @@ efi_veto_hp_xhci ( EFI_DRIVER_BINDING_PROTOCOL *binding __unused,
 	return 0;
 }
 
+static int
+efi_veto_hp_x540 ( EFI_DRIVER_BINDING_PROTOCOL *binding __unused,
+		   EFI_LOADED_IMAGE_PROTOCOL *loaded __unused,
+		   EFI_COMPONENT_NAME_PROTOCOL *wtf __unused,
+		   const char *manufacturer, const CHAR16 *name ) {
+	static const CHAR16 x540[] = L"Intel(R) 10GbE Driver 4.4.30 x64";
+	// static const char *hp = "HP";
+
+	/* Check manufacturer and driver name */
+	if ( ! manufacturer )
+		return 0;
+	if ( ! name )
+		return 0;
+	// if ( strcmp ( manufacturer, hp ) == 0 )
+	// 	return 0;
+	if ( memcmp ( name, x540, sizeof ( x540 ) ) != 0 )
+		return 0;
+
+	return 1;
+}
+
 /**
  * Veto VMware UefiPxeBcDxe driver
  *
@@ -499,6 +520,10 @@ static struct efi_veto_candidate efi_vetoes[] = {
 	{
 		.name = "Ip4Config",
 		.veto = efi_veto_ip4config,
+	},
+	{
+		.name = "HP x540",
+		.veto = efi_veto_hp_x540,
 	},
 	{
 		.name = "HP Xhci",
